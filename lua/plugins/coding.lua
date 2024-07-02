@@ -8,6 +8,7 @@ return {
       "hrsh7th/cmp-nvim-lsp",
       "hrsh7th/cmp-buffer",
       "hrsh7th/cmp-path",
+      "L3MON4D3/LuaSnip"
     },
     opts = function()
       vim.api.nvim_set_hl(0, "CmpGhostText", { link = "Comment", default = true })
@@ -73,7 +74,8 @@ return {
         markdown = { "inject" },
       },
       format_on_save = {
-        lsp_fallback = true,
+        lsp_format = "fallback",
+        timeout_ms = 500,
       },
     },
   },
