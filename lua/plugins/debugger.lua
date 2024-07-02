@@ -19,7 +19,6 @@ return {
 
       -- Register codelldb adapter with dap
       -- Installation and automatic path configuration handled by mason
-      print(vim.fn.exepath("codelldb"))
       dap.adapters.codelldb = {
         type = "server",
         port = "${port}",

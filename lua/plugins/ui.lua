@@ -22,7 +22,7 @@ return {
       on_open = function(win)
         vim.api.nvim_win_set_config(win, { zindex = 100 })
       end,
-      render = "wrapped-compact"
+      render = "wrapped-compact",
     },
     init = function()
       -- when noice is not enabled, install notify on VeryLazy
@@ -36,6 +36,8 @@ return {
       end
     end,
   },
+
+  -- Show open buffers
   {
     "akinsho/bufferline.nvim",
     event = "VeryLazy",
@@ -52,9 +54,12 @@ return {
     },
     opts = {
       options = {
+        close_command = function(n)
+          require("util.ui").bufremove(n)
+        end,
         show_close_icon = false,
         show_buffer_close_icons = false,
-        right_mouse_command = false,
+        ight_mouse_command = false,
         left_mouse_command = false,
         always_show_bufferline = false,
         offsets = {
@@ -103,8 +108,7 @@ return {
           lualine_b = { "branch" },
 
           lualine_c = {
-            vim.uv.cwd
-            {
+            vim.uv.cwd({
               "diagnostics",
               symbols = {
                 error = icons.diagnostics.Error,
@@ -112,7 +116,7 @@ return {
                 info = icons.diagnostics.Info,
                 hint = icons.diagnostics.Hint,
               },
-            },
+            }),
             { "filetype", icon_only = true, separator = "", padding = { left = 1, right = 0 } },
             { require("util.ui").pretty_path() },
           },
@@ -195,6 +199,35 @@ return {
     end,
   },
 
+  -- indent guides for Neovim
+  {
+    "lukas-reineke/indent-blankline.nvim",
+    event = "LazyFile",
+    opts = {
+      indent = {
+        char = "│",
+        tab_char = "│",
+      },
+      scope = { show_start = false, show_end = false },
+      exclude = {
+        filetypes = {
+          "help",
+          "alpha",
+          "dashboard",
+          "neo-tree",
+          "Trouble",
+          "trouble",
+          "lazy",
+          "mason",
+          "notify",
+          "toggleterm",
+          "lazyterm",
+        },
+      },
+    },
+    main = "ibl",
+  },
+
   {
     "folke/noice.nvim",
     event = "VeryLazy",
@@ -247,7 +280,7 @@ return {
       require("noice").setup(opts)
     end,
   },
-  
+
   -- ui components
   { "MunifTanjim/nui.nvim", lazy = true },
 }

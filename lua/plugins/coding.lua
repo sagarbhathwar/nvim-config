@@ -1,6 +1,5 @@
 return {
   --Auto-complete configuration
-  -- Formatting
   {
     "hrsh7th/nvim-cmp",
     event = "InsertEnter",
@@ -8,12 +7,11 @@ return {
       "hrsh7th/cmp-nvim-lsp",
       "hrsh7th/cmp-buffer",
       "hrsh7th/cmp-path",
-      "L3MON4D3/LuaSnip"
+      "L3MON4D3/LuaSnip",
     },
     opts = function()
       vim.api.nvim_set_hl(0, "CmpGhostText", { link = "Comment", default = true })
       local cmp = require("cmp")
-      local defaults = require("cmp.config.default")()
       return {
         auto_brackets = {
           "python",
@@ -29,7 +27,7 @@ return {
           ["<Tab>"] = require("util").confirm({ select = true }),
           ["<CR>"] = require("util").confirm({ select = true }),
           ["<C-y>"] = require("util").confirm({ select = true }),
-          ["<S-CR>"] = require("util").confirm({ behavior = cmp.ConfirmBehavior.Replace }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+          ["<S-CR>"] = require("util").confirm({ behavior = cmp.ConfirmBehavior.Replace }),
           ["<C-CR>"] = function(fallback)
             cmp.abort()
             fallback()
@@ -51,10 +49,11 @@ return {
             hl_group = "CmpGhostText",
           },
         },
-        sorting = defaults.sorting,
       }
     end,
   },
+
+  -- Formatting
   {
     "stevearc/conform.nvim",
     event = "BufWritePre", -- load the plugin before saving
@@ -70,7 +69,7 @@ return {
     opts = {
       formatters_by_ft = {
         lua = { "stylua" },
-        python = { "isort", "black" },
+        python = { "ruff_fix", "ruff_format" },
         markdown = { "inject" },
       },
       format_on_save = {
@@ -84,18 +83,16 @@ return {
   {
     "windwp/nvim-autopairs",
     event = "InsertEnter",
+    opts = {},
     config = function()
       local cmp_autopairs = require("nvim-autopairs.completion.cmp")
       local cmp = require("cmp")
       cmp.event:on("confirm_done", cmp_autopairs.on_confirm_done())
 
-      -- require("nvim-autopairs").setup({
-      --   enable_check_bracket_line = false,
-      --   ignored_next_char = "[%w%.]",
-      -- })
+      require("nvim-autopairs").setup({
+        enable_check_bracket_line = false,
+        ignored_next_char = "[%w%.]",
+      })
     end,
-    opts = {},
-    -- use opts = {} for passing setup options
-    -- this is equalent to setup({}) function
   },
 }
