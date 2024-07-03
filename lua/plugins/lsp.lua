@@ -125,6 +125,14 @@ return {
       },
     },
     config = function(_, opts)
+      -- Setup lsp navigation using telescope, if telescope is available
+      local has_telescope, builtin = pcall(require, "telescope.builtin")
+      if has_telescope then
+        vim.keymap.set("n", "gd", builtin.lsp_definitions, { desc = "Goto Definition" })
+        vim.keymap.set("n", "gr", builtin.lsp_references, { desc = "References" })
+        vim.keymap.set("n", "gI", builtin.lsp_implementations, { desc = "Goto Implementation" })
+        vim.keymap.set("n", "gY", builtin.lsp_type_definitions, { desc = "Goto Type Definition" })
+      end
       local cmp_nvim_lsp = require("cmp_nvim_lsp")
       local capabilities = vim.tbl_deep_extend(
         "force",

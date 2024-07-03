@@ -54,13 +54,18 @@ return {
     },
     opts = {
       options = {
-        close_command = function(n)
-          require("util.ui").bufremove(n)
+        diagnostics = "nvim_lsp",
+        diagnostics_indicator = function(_, _, diag)
+          local icons = require("util.ui").icons.diagnostics
+          local ret = (diag.error and icons.Error .. diag.error .. " " or "")
+            .. (diag.warning and icons.Warn .. diag.warning or "")
+          return vim.trim(ret)
         end,
+
         show_close_icon = false,
         show_buffer_close_icons = false,
-        ight_mouse_command = false,
         left_mouse_command = false,
+        right_mouse_command = false,
         always_show_bufferline = false,
         offsets = {
           {
@@ -71,6 +76,37 @@ return {
           },
         },
       },
+    },
+  },
+
+  -- Fix buffer deletion problem with neovim when paired with bufferline
+  {
+    "famiu/bufdelete.nvim",
+    config = function()
+      vim.keymap.set("n", "<leader>bd", function()
+        require("bufdelete").bufdelete(0, true)
+      end, { noremap = true, silent = true })
+    end,
+  },
+
+  -- lazygit integration
+  {
+    "kdheepak/lazygit.nvim",
+    cmd = {
+      "LazyGit",
+      "LazyGitConfig",
+      "LazyGitCurrentFile",
+      "LazyGitFilter",
+      "LazyGitFilterCurrentFile",
+    },
+    -- for floating window border decoration
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+    },
+    -- setting the keybinding for LazyGit with 'keys' is recommended in
+    -- order to load the plugin when the command is run for the first time
+    keys = {
+      { "<leader>lg", "<cmd>LazyGit<cr>", desc = "LazyGit" },
     },
   },
 
