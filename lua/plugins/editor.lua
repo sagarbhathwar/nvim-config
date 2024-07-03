@@ -7,6 +7,7 @@ return {
       "nvim-lua/plenary.nvim",
       "nvim-tree/nvim-web-devicons",
       "MunifTanjim/nui.nvim",
+      "3rd/image.nvim",
     },
     keys = {
       { "<leader>fe", "<cmd>Neotree toggle<cr>", desc = "Explorer NeoTree (Root Dir)" },
@@ -36,7 +37,10 @@ return {
         mappings = {
           ["l"] = "open",
           ["h"] = "close_node",
-          ["<space>"] = "none",
+          ["<space>"] = {
+            "toggle_node",
+            nowait = false, -- disable `nowait` if you have existing combos starting with this char that you want to use
+          },
           ["Y"] = {
             function(state)
               local node = state.tree:get_node()
@@ -63,6 +67,19 @@ return {
         },
       },
     },
+    config = function(_, opts)
+      require("neo-tree").setup(opts)
+
+      -- Update neo-tree's git_status after closing lazygit terminal
+      vim.api.nvim_create_autocmd("TermClose", {
+        pattern = "*lazygit",
+        callback = function()
+          if package.loaded["neo-tree.sources.git_status"] then
+            require("neo-tree.sources.git_status").refresh()
+          end
+        end,
+      })
+    end,
   },
 
   -- search/replace in multiple files
