@@ -9,20 +9,8 @@ return {
       "MunifTanjim/nui.nvim",
     },
     keys = {
-      {
-        "<leader>fe",
-        function()
-          require("neo-tree.command").execute({ toggle = true, dir = require("util.root")() })
-        end,
-        desc = "Explorer NeoTree (Root Dir)",
-      },
-      {
-        "<leader>ge",
-        function()
-          require("neo-tree.command").execute({ source = "git_status", toggle = true })
-        end,
-        desc = "Git Explorer",
-      },
+      { "<leader>fe", "<cmd>Neotree toggle<cr>", desc = "Explorer NeoTree (Root Dir)" },
+      { "<leader>ge", "<cmd>Neotree float git_status<cr>", desc = "Git Explorer" },
     },
     init = function()
       -- FIX: use `autocmd` for lazy-loading neo-tree instead of directly requiring it,
@@ -108,6 +96,33 @@ return {
     },
   },
 
+  -- lazygit integration
+  {
+    "kdheepak/lazygit.nvim",
+    cmd = {
+      "LazyGit",
+      "LazyGitConfig",
+      "LazyGitCurrentFile",
+      "LazyGitFilter",
+      "LazyGitFilterCurrentFile",
+    },
+    -- for floating window border decoration
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+    },
+    -- setting the keybinding for LazyGit with 'keys' is recommended in
+    -- order to load the plugin when the command is run for the first time
+    keys = {
+      { "<leader>gg", "<cmd>LazyGit<cr>", desc = "LazyGit" },
+    },
+    config = function()
+      local has_telescope, telescope = pcall(require, "telescope")
+      if has_telescope then
+        telescope.load_extension("lazygit")
+      end
+    end,
+  },
+
   -- git signs highlights text that has changed since the list
   -- git commit, and also lets you interactively stage & unstage
   -- hunks in a commit.
@@ -167,6 +182,11 @@ return {
         map({ "o", "x" }, "ih", ":<C-U>Gitsigns select_hunk<CR>", "GitSigns Select Hunk")
       end,
     },
+  },
+
+  -- Git diff side-by-side view
+  {
+    "sindrets/diffview.nvim",
   },
 
   -- better diagnostics list and others

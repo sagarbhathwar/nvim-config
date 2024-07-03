@@ -79,6 +79,13 @@ return {
     },
   },
 
+  -- Manage predefined window layouts
+  {
+    "folke/edgy.nvim",
+    event = "VeryLazy",
+    opts = {},
+  },
+
   -- Fix buffer deletion problem with neovim when paired with bufferline
   {
     "famiu/bufdelete.nvim",
@@ -87,27 +94,6 @@ return {
         require("bufdelete").bufdelete(0, true)
       end, { noremap = true, silent = true })
     end,
-  },
-
-  -- lazygit integration
-  {
-    "kdheepak/lazygit.nvim",
-    cmd = {
-      "LazyGit",
-      "LazyGitConfig",
-      "LazyGitCurrentFile",
-      "LazyGitFilter",
-      "LazyGitFilterCurrentFile",
-    },
-    -- for floating window border decoration
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-    },
-    -- setting the keybinding for LazyGit with 'keys' is recommended in
-    -- order to load the plugin when the command is run for the first time
-    keys = {
-      { "<leader>lg", "<cmd>LazyGit<cr>", desc = "LazyGit" },
-    },
   },
 
   -- statusline

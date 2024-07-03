@@ -1,10 +1,20 @@
 return {
   {
     {
+      "doums/darcula",
+      lazy = true,
+    },
+    {
       "folke/tokyonight.nvim",
       lazy = true,
       opts = { style = "moon" },
     },
+
+    {
+      "overcache/NeoSolarized",
+      lazzy = true,
+    },
+
     "catppuccin/nvim",
     lazy = true,
     name = "catppuccin",
@@ -46,14 +56,4 @@ return {
       },
     },
   },
-
-  -- -- TODO: Move to options.lua after getting rid of LazyVim
-  -- {
-  --   "LazyVim/LazyVim",
-  --   opts = {
-  --     colorscheme = function()
-  --       require("catppuccin").load()
-  --     end,
-  --   },
-  -- },
 }

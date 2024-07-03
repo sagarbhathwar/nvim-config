@@ -43,10 +43,10 @@ return {
         severity_sort = true,
         signs = {
           text = {
-            [vim.diagnostic.severity.ERROR] = require("util").icons.diagnostics.Error,
-            [vim.diagnostic.severity.WARN] = require("util").icons.diagnostics.Warn,
-            [vim.diagnostic.severity.HINT] = require("util").icons.diagnostics.Hint,
-            [vim.diagnostic.severity.INFO] = require("util").icons.diagnostics.Info,
+            [vim.diagnostic.severity.ERROR] = require("util.ui").icons.diagnostics.Error,
+            [vim.diagnostic.severity.WARN] = require("util.ui").icons.diagnostics.Warn,
+            [vim.diagnostic.severity.HINT] = require("util.ui").icons.diagnostics.Hint,
+            [vim.diagnostic.severity.INFO] = require("util.ui").icons.diagnostics.Info,
           },
         },
       },
