@@ -201,11 +201,6 @@ return {
     },
   },
 
-  -- Git diff side-by-side view
-  {
-    "sindrets/diffview.nvim",
-  },
-
   -- better diagnostics list and others
   {
     "folke/trouble.nvim",
@@ -304,10 +299,8 @@ return {
       { "<leader><space>", "<cmd>Telescope find_files<cr>", desc = "Find Files (Root Dir)" },
       -- find
       { "<leader>fb", "<cmd>Telescope buffers sort_mru=true sort_lastused=true<cr>", desc = "Buffers" },
-      -- { "<leader>fF", LazyVim.pick("auto", { root = false }), desc = "Find Files (cwd)" },
       { "<leader>fg", "<cmd>Telescope git_files<cr>", desc = "Find Files (git-files)" },
       { "<leader>fr", "<cmd>Telescope oldfiles<cr>", desc = "Recent" },
-      -- { "<leader>fR", LazyVim.pick("oldfiles", { cwd = vim.uv.cwd() }), desc = "Recent (cwd)" },
       -- git
       { "<leader>gc", "<cmd>Telescope git_commits<CR>", desc = "Commits" },
       { "<leader>gs", "<cmd>Telescope git_status<CR>", desc = "Status" },
@@ -320,7 +313,6 @@ return {
       { "<leader>sd", "<cmd>Telescope diagnostics bufnr=0<cr>", desc = "Document Diagnostics" },
       { "<leader>sD", "<cmd>Telescope diagnostics<cr>", desc = "Workspace Diagnostics" },
       { "<leader>sg", "<cmd>Telescope live_grep<cr>", desc = "Grep (Root Dir)" },
-      -- { "<leader>sG", LazyVim.pick("live_grep", { root = false }), desc = "Grep (cwd)" },
       { "<leader>sh", "<cmd>Telescope help_tags<cr>", desc = "Help Pages" },
       { "<leader>sH", "<cmd>Telescope highlights<cr>", desc = "Search Highlight Groups" },
       { "<leader>sj", "<cmd>Telescope jumplist<cr>", desc = "Jumplist" },
@@ -332,28 +324,6 @@ return {
       { "<leader>sR", "<cmd>Telescope resume<cr>", desc = "Resume" },
       { "<leader>sq", "<cmd>Telescope quickfix<cr>", desc = "Quickfix List" },
       { "<leader>sw", "<cmd>Telescope grep_string<cr>", desc = "Word (Root Dir)" },
-      -- { "<leader>sW", LazyVim.pick("grep_string", { root = false, word_match = "-w" }), desc = "Word (cwd)" },
-      -- { "<leader>sw", LazyVim.pick("grep_string"), mode = "v", desc = "Selection (Root Dir)" },
-      -- { "<leader>sW", LazyVim.pick("grep_string", { root = false }), mode = "v", desc = "Selection (cwd)" },
-      -- { "<leader>uC", LazyVim.pick("colorscheme", { enable_preview = true }), desc = "Colorscheme with Preview" },
-      -- {
-      --   "<leader>ss",
-      --   function()
-      --     require("telescope.builtin").lsp_document_symbols({
-      --       symbols = LazyVim.config.get_kind_filter(),
-      --     })
-      --   end,
-      --   desc = "Goto Symbol",
-      -- },
-      -- {
-      --   "<leader>sS",
-      --   function()
-      --     require("telescope.builtin").lsp_dynamic_workspace_symbols({
-      --       symbols = LazyVim.config.get_kind_filter(),
-      --     })
-      --   end,
-      --   desc = "Goto Symbol (Workspace)",
-      -- },
     },
     config = function()
       require("telescope").setup({

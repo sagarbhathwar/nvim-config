@@ -12,6 +12,7 @@ return {
     opts = function()
       vim.api.nvim_set_hl(0, "CmpGhostText", { link = "Comment", default = true })
       local cmp = require("cmp")
+      local luasnip = require("luasnip")
       return {
         auto_brackets = {
           "python",
@@ -22,12 +23,45 @@ return {
         preselect = cmp.PreselectMode.Item or cmp.PreselectMode.None,
         mapping = cmp.mapping.preset.insert({
           ["<C-b>"] = cmp.mapping.scroll_docs(-4),
+
           ["<C-f>"] = cmp.mapping.scroll_docs(4),
-          ["<C-Space>"] = cmp.mapping.complete(),
-          ["<Tab>"] = require("util").confirm({ select = true }),
-          ["<CR>"] = require("util").confirm({ select = true }),
-          ["<C-y>"] = require("util").confirm({ select = true }),
-          ["<S-CR>"] = require("util").confirm({ behavior = cmp.ConfirmBehavior.Replace }),
+
+          -- Intellij-like autocompletion
+          -- <CR> to select the options
+          ["<CR>"] = cmp.mapping(function(fallback)
+            if cmp.visible() then
+              if luasnip.expandable() then
+                luasnip.expand()
+              else
+                cmp.confirm({
+                  select = true,
+                })
+              end
+            else
+              fallback()
+            end
+          end),
+          -- Use <TAB> to cycle through auto-complete option
+          ["<Tab>"] = cmp.mapping(function(fallback)
+            if cmp.visible() then
+              cmp.select_next_item()
+            elseif luasnip.locally_jumpable(1) then
+              luasnip.jump(1)
+            else
+              fallback()
+            end
+          end, { "i", "s" }),
+          -- <Shift-TAB> to cycle backwards
+          ["<S-Tab>"] = cmp.mapping(function(fallback)
+            if cmp.visible() then
+              cmp.select_prev_item()
+            elseif luasnip.locally_jumpable(-1) then
+              luasnip.jump(-1)
+            else
+              fallback()
+            end
+          end, { "i", "s" }),
+
           ["<C-CR>"] = function(fallback)
             cmp.abort()
             fallback()

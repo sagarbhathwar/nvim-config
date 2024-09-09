@@ -8,7 +8,31 @@ return {
     },
     config = function()
       require("dap-python").setup("python3")
-      require("dapui").setup()
+      require("dapui").setup({
+        layouts = {
+          {
+            elements = {
+              {
+                id = "scopes",
+                size = 0.25,
+              },
+              { id = "breakpoints", size = 0.25 },
+              { id = "stacks", size = 0.25 },
+              { id = "watches", size = 0.25 },
+            },
+            size = 40,
+            position = "right",
+          },
+          {
+            elements = {
+              "repl",
+              "console",
+            },
+            size = 10,
+            position = "bottom",
+          },
+        },
+      })
 
       local dap = require("dap")
       local ui = require("dapui")

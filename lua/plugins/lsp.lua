@@ -115,14 +115,7 @@ return {
           enabled = true,
         },
       },
-      setup = {
-        ["ruff"] = function()
-          require("util").on_attach(function(client, _)
-            -- Disable hover in favor of Pyright
-            client.server_capabilities.hoverProvider = false
-          end, "ruff")
-        end,
-      },
+      setup = {},
     },
     config = function(_, opts)
       -- Setup lsp navigation using telescope, if telescope is available

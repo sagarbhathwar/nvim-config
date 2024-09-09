@@ -66,7 +66,7 @@ return {
         show_buffer_close_icons = false,
         left_mouse_command = false,
         right_mouse_command = false,
-        always_show_bufferline = false,
+        always_show_bufferline = true,
         offsets = {
           {
             filetype = "neo-tree",
