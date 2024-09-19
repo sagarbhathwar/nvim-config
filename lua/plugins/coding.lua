@@ -90,6 +90,7 @@ return {
   -- Refactoring
   {
     "ThePrimeagen/refactoring.nvim",
+    lazy = true,
     dependencies = {
       "nvim-lua/plenary.nvim",
       "nvim-treesitter/nvim-treesitter",
@@ -128,7 +129,7 @@ return {
       },
       format_on_save = {
         lsp_format = "fallback",
-        timeout_ms = 500,
+        timeout_ms = 1000,
       },
     },
     init = function()
@@ -158,6 +159,22 @@ return {
       end, {
         desc = "Re-enable autoformat-on-save",
       })
+    end,
+  },
+
+  -- Code folding with ufo
+  {
+    "kevinhwang91/nvim-ufo",
+    dependencies = {
+      "kevinhwang91/promise-async",
+    },
+    config = function()
+      vim.o.foldcolumn = "0" -- '0' is not bad
+      vim.o.foldlevel = 99 -- Using ufo provider need a large value, feel free to decrease the value
+      vim.o.foldlevelstart = 99
+      vim.o.foldenable = true
+
+      require("ufo").setup()
     end,
   },
 

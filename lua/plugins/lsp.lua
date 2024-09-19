@@ -1,46 +1,32 @@
 return {
   {
-    "WhoIsSethDaniel/mason-tool-installer.nvim",
+    "neovim/nvim-lspconfig",
     dependencies = {
       "williamboman/mason.nvim",
-      "williamboman/mason-lspconfig.nvim",
-    },
-    opts = {
-      ensure_installed = {
-        "lua_ls",
-        "clangd",
-        "codelldb",
-        "pyright",
-        "ruff",
-        "debugpy",
-        "stylua",
-        "shellcheck",
-        "shfmt",
+      {
+        "williamboman/mason-lspconfig.nvim",
+        opts = {
+          ensure_installed = {
+            "lua_ls",
+            "clangd",
+            "pyright",
+            "ruff",
+          },
+        },
+        config = function(_, opts)
+          require("mason").setup()
+          require("mason-lspconfig").setup(opts)
+        end,
       },
     },
-    config = function(_, opts)
-      require("mason").setup()
-      require("mason-tool-installer").setup(opts)
-    end,
-  },
-  {
-    "neovim/nvim-lspconfig",
     event = "LazyFile",
     keys = {
-      { "gd", vim.lsp.buf.definition, desc = "Goto Definition" },
-      { "gr", vim.lsp.buf.references, desc = "Goto References" },
+      { "gd",        vim.lsp.buf.definition,  desc = "Goto Definition" },
+      { "gr",        vim.lsp.buf.references,  desc = "Goto References" },
       { "<leader>c", vim.lsp.buf.code_action, desc = "Code Action" },
     },
     opts = {
       diagnostics = {
-        underline = true,
-        update_in_insert = false,
-        virtual_text = {
-          spacing = 4,
-          source = "if_many",
-          prefix = "icons",
-        },
-        severity_sort = true,
         signs = {
           text = {
             [vim.diagnostic.severity.ERROR] = require("util.ui").icons.diagnostics.Error,
@@ -54,7 +40,7 @@ return {
         enabled = true,
       },
       codelens = {
-        enabled = false,
+        enabled = true,
       },
       document_highlight = {
         enabled = true,
@@ -64,6 +50,12 @@ return {
           fileOperations = {
             didRename = true,
             willRename = true,
+          },
+          textDocument = {
+            foldingRange = {
+              dynamicRegistration = false,
+              lineFoldingOnly = true,
+            },
           },
         },
       },
@@ -75,39 +67,19 @@ return {
               diagnostics = {
                 globals = { "vim" },
               },
-              workspace = {
-                checkThirdParty = false,
-              },
-              codeLens = {
-                enable = true,
-              },
-              completion = {
-                callSnippet = "Replace",
-              },
-              doc = {
-                privateName = { "^_" },
-              },
-              hint = {
-                enable = true,
-                setType = false,
-                paramType = true,
-                paramName = "Disable",
-                semicolon = "Disable",
-                arrayIndex = "Disable",
-              },
             },
           },
         },
         pyright = {
           enabled = true,
           settings = {
-            pyright = {
-              disableOrganizeImports = true,
-            },
             python = {
               analysis = {
-                ignore = { "*" },
+                typeCheckingMode = "basic"
               },
+              autoSearchPaths = true,
+              diagnosticMode = "openFilesOnly",
+              useLibraryCodeForTypes = true,
             },
           },
         },
@@ -115,7 +87,6 @@ return {
           enabled = true,
         },
       },
-      setup = {},
     },
     config = function(_, opts)
       -- Setup lsp navigation using telescope, if telescope is available
@@ -126,6 +97,8 @@ return {
         vim.keymap.set("n", "gI", builtin.lsp_implementations, { desc = "Goto Implementation" })
         vim.keymap.set("n", "gY", builtin.lsp_type_definitions, { desc = "Goto Type Definition" })
       end
+
+      -- Improve lsp capabilities
       local cmp_nvim_lsp = require("cmp_nvim_lsp")
       local capabilities = vim.tbl_deep_extend(
         "force",
@@ -135,20 +108,12 @@ return {
         opts.capabilities
       )
 
+
       local function setup(server)
         local server_opts = vim.tbl_deep_extend("force", {
           capabilities = vim.deepcopy(capabilities),
         }, opts.servers[server] or {})
 
-        if opts.setup[server] then
-          if opts.setup[server](server, server_opts) then
-            return
-          end
-        elseif opts.setup["*"] then
-          if opts.setup["*"](server, server_opts) then
-            return
-          end
-        end
         require("lspconfig")[server].setup(server_opts)
       end
 

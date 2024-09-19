@@ -2,11 +2,22 @@ return {
   {
     "mfussenegger/nvim-dap",
     dependencies = {
+      "williambowman/mason.nvim",
+      {
+        "WhoIsSethDaniel/mason-tool-installer.nvim",
+        opts = {
+          ensure_installed = { "debugpy", "codelldb" }
+        }
+      },
       "mfussenegger/nvim-dap-python",
       "rcarriga/nvim-dap-ui",
       "nvim-neotest/nvim-nio",
     },
-    config = function()
+    config = function(_, opts)
+      -- Ensure required debuggers are installed
+      require("mason").setup()
+      require("mason-tool-installer").setup(opts)
+
       require("dap-python").setup("python3")
       require("dapui").setup({
         layouts = {
@@ -17,8 +28,8 @@ return {
                 size = 0.25,
               },
               { id = "breakpoints", size = 0.25 },
-              { id = "stacks", size = 0.25 },
-              { id = "watches", size = 0.25 },
+              { id = "stacks",      size = 0.25 },
+              { id = "watches",     size = 0.25 },
             },
             size = 40,
             position = "right",

@@ -15,9 +15,9 @@ return {
     cmd = { "TSUpdateSync", "TSUpdate", "TSInstall" },
     keys = {
       { "<c-space>", desc = "Increment Selection" },
-      { "<bs>", desc = "Decrement Selection", mode = "x" },
+      { "<bs>",      desc = "Decrement Selection", mode = "x" },
     },
-    opts_extend = { "ensure_installed" },
+    -- opts_extend = { "ensure_installed" },
     opts = {
       highlight = { enable = true },
       indent = { enable = true },
@@ -25,7 +25,6 @@ return {
         "bash",
         "c",
         "diff",
-        "html",
         "json",
         "jsonc",
         "lua",
@@ -54,27 +53,8 @@ return {
           node_decremental = "<bs>",
         },
       },
-      textobjects = {
-        move = {
-          enable = true,
-          goto_next_start = { ["]f"] = "@function.outer", ["]c"] = "@class.outer", ["]a"] = "@parameter.inner" },
-          goto_next_end = { ["]F"] = "@function.outer", ["]C"] = "@class.outer", ["]A"] = "@parameter.inner" },
-          goto_previous_start = { ["[f"] = "@function.outer", ["[c"] = "@class.outer", ["[a"] = "@parameter.inner" },
-          goto_previous_end = { ["[F"] = "@function.outer", ["[C"] = "@class.outer", ["[A"] = "@parameter.inner" },
-        },
-      },
     },
     config = function(_, opts)
-      require("nvim-treesitter.configs").setup(opts)
-    end,
-  },
-
-  {
-    "nvim-treesitter/nvim-treesitter-textobjects",
-    event = "VeryLazy",
-    enabled = true,
-    config = function(_, opts)
-      -- If treesitter is already loaded, we need to run config again for textobjects
       require("nvim-treesitter.configs").setup(opts)
     end,
   },
