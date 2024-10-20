@@ -3,47 +3,48 @@ return {
     "neovim/nvim-lspconfig",
     dependencies = {
       "williamboman/mason.nvim",
+      "williamboman/mason-lspconfig.nvim",
       {
-        "williamboman/mason-lspconfig.nvim",
-        opts = {
-          ensure_installed = {
-            "lua_ls",
-            "clangd",
-            "pyright",
-            "ruff",
-          },
-        },
-        config = function(_, opts)
-          require("mason").setup()
-          require("mason-lspconfig").setup(opts)
-        end,
+        "p00f/clangd_extensions.nvim",
+        lazy = true,
+        config = function() end,
       },
     },
     event = "LazyFile",
     keys = {
-      { "gd",        vim.lsp.buf.definition,  desc = "Goto Definition" },
-      { "gr",        vim.lsp.buf.references,  desc = "Goto References" },
-      { "<leader>c", vim.lsp.buf.code_action, desc = "Code Action" },
+      { "gd",         vim.lsp.buf.definition,      desc = "Goto Definition" },
+      { "gr",         vim.lsp.buf.references,      desc = "Goto References" },
+      { "gy",         vim.lsp.buf.type_definition, desc = "Goto T[y]pe Definition" },
+      { "gD",         vim.lsp.buf.declaration,     desc = "Goto Declaration" },
+      { "K",          vim.lsp.buf.hover,           desc = "Hover" },
+      { "gK",         vim.lsp.buf.signature_help,  desc = "Signature Help", },
+      { "<c-k>",      vim.lsp.buf.signature_help,  mode = "i",                     desc = "Signature Help" },
+      { "<leader>ca", vim.lsp.buf.code_action,     desc = "Code Action",           mode = { "n", "v" } },
     },
     opts = {
+      ensure_installed = {
+        "lua_ls",
+        "clangd",
+        "basedpyright",
+        "ruff",
+      },
       diagnostics = {
+        underline = true,
+        update_in_insert = false,
+        virtual_text = {
+          spacing = 4,
+          source = "if_many",
+          prefix = "●",
+        },
+        severity_sort = true,
         signs = {
           text = {
-            [vim.diagnostic.severity.ERROR] = require("util.ui").icons.diagnostics.Error,
-            [vim.diagnostic.severity.WARN] = require("util.ui").icons.diagnostics.Warn,
-            [vim.diagnostic.severity.HINT] = require("util.ui").icons.diagnostics.Hint,
-            [vim.diagnostic.severity.INFO] = require("util.ui").icons.diagnostics.Info,
+            [vim.diagnostic.severity.ERROR] = " ",
+            [vim.diagnostic.severity.WARN] = " ",
+            [vim.diagnostic.severity.HINT] = " ",
+            [vim.diagnostic.severity.INFO] = " ",
           },
         },
-      },
-      inlay_hints = {
-        enabled = true,
-      },
-      codelens = {
-        enabled = true,
-      },
-      document_highlight = {
-        enabled = true,
       },
       capabilities = {
         workspace = {
@@ -67,28 +68,123 @@ return {
               diagnostics = {
                 globals = { "vim" },
               },
+              workspace = {
+                checkThirdParty = false,
+              },
+              codeLens = {
+                enable = true,
+              },
+              completion = {
+                callSnippet = "Replace",
+              },
+              doc = {
+                privateName = { "^_" },
+              },
+              hint = {
+                enable = true,
+                setType = false,
+                paramType = true,
+                paramName = "Disable",
+                semicolon = "Disable",
+                arrayIndex = "Disable",
+              },
             },
           },
         },
-        pyright = {
+        basedpyright = {
           enabled = true,
           settings = {
-            python = {
+            basedpyright = {
               analysis = {
-                typeCheckingMode = "basic"
+                autoImportCompletions = true,
+                typeCheckingMode = "basic",
+                autoSearchPaths = true,
+                diagnosticMode = "openFilesOnly",
+                useLibraryCodeForTypes = true,
               },
-              autoSearchPaths = true,
-              diagnosticMode = "openFilesOnly",
-              useLibraryCodeForTypes = true,
             },
           },
         },
         ruff = {
           enabled = true,
+          cmd_env = { RUFF_TRACE = "messages" },
+          init_options = {
+            settings = {
+              logLevel = "error",
+            },
+          },
         },
+        clangd = {
+          keys = {
+            { "<leader>ch", "<cmd>ClangdSwitchSourceHeader<cr>", desc = "Switch Source/Header (C/C++)" },
+          },
+          root_dir = function(fname)
+            return require("lspconfig.util").root_pattern(
+              "Makefile",
+              "configure.ac",
+              "configure.in",
+              "config.h.in",
+              "meson.build",
+              "meson_options.txt",
+              "build.ninja"
+            )(fname) or require("lspconfig.util").root_pattern("compile_commands.json", "compile_flags.txt")(
+              fname
+            ) or require("lspconfig.util").find_git_ancestor(fname)
+          end,
+          capabilities = {
+            offsetEncoding = { "utf-16" },
+          },
+          cmd = {
+            "clangd",
+            "--background-index",
+            "--clang-tidy",
+            "--header-insertion=iwyu",
+            "--completion-style=detailed",
+            "--function-arg-placeholders",
+            "--fallback-style=llvm",
+          },
+          init_options = {
+            usePlaceholders = true,
+            completeUnimported = true,
+            clangdFileStatus = true,
+          },
+        }
       },
+      setup = {
+        clangd = function(_, opts)
+          local clangd_ext_opts = {
+            inlay_hints = {
+              inline = true,
+            },
+            ast = {
+              role_icons = {
+                type = "",
+                declaration = "",
+                expression = "",
+                specifier = "",
+                statement = "",
+                ["template argument"] = "",
+              },
+              kind_icons = {
+                Compound = "",
+                Recovery = "",
+                TranslationUnit = "",
+                PackExpansion = "",
+                TemplateTypeParm = "",
+                TemplateTemplateParm = "",
+                TemplateParamObject = "",
+              },
+            },
+          }
+          require("clangd_extensions").setup(vim.tbl_deep_extend("force", clangd_ext_opts or {}, { server = opts }))
+          return false
+        end,
+      }
     },
     config = function(_, opts)
+      -- Setup diagnostics
+      vim.diagnostic.config(vim.deepcopy(opts.diagnostics))
+
       -- Setup lsp navigation using telescope, if telescope is available
       local has_telescope, builtin = pcall(require, "telescope.builtin")
       if has_telescope then
@@ -99,25 +195,38 @@ return {
       end
 
       -- Improve lsp capabilities
-      local cmp_nvim_lsp = require("cmp_nvim_lsp")
+      local has_cmp, cmp_nvim_lsp = pcall(require, "cmp_nvim_lsp")
       local capabilities = vim.tbl_deep_extend(
         "force",
         {},
         vim.lsp.protocol.make_client_capabilities(),
-        cmp_nvim_lsp.default_capabilities(),
+        has_cmp and cmp_nvim_lsp.default_capabilities() or {},
         opts.capabilities
       )
-
 
       local function setup(server)
         local server_opts = vim.tbl_deep_extend("force", {
           capabilities = vim.deepcopy(capabilities),
         }, opts.servers[server] or {})
 
+
+        if opts.setup[server] then
+          if opts.setup[server](server, server_opts) then
+            return
+          end
+        elseif opts.setup["*"] then
+          if opts.setup["*"](server, server_opts) then
+            return
+          end
+        end
+
         require("lspconfig")[server].setup(server_opts)
       end
 
+      require("mason").setup()
+
       require("mason-lspconfig").setup({
+        ensure_installed = opts.ensure_installed,
         handlers = { setup },
       })
     end,

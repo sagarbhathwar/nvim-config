@@ -7,7 +7,8 @@ return {
       "hrsh7th/cmp-nvim-lsp",
       "hrsh7th/cmp-buffer",
       "hrsh7th/cmp-path",
-      "L3MON4D3/LuaSnip",
+      { "L3MON4D3/LuaSnip", build = "make install_jsregexp" },
+      'saadparwaiz1/cmp_luasnip'
     },
     opts = function()
       vim.api.nvim_set_hl(0, "CmpGhostText", { link = "Comment", default = true })
@@ -62,21 +63,52 @@ return {
             end
           end, { "i", "s" }),
 
-          ["<C-CR>"] = function(fallback)
+          ["<C-Space>"] = cmp.mapping(function(fallback)
+            cmp.close()
+          end, { "i" }),
+
+          ["<C-CR>"] = cmp.mapping(function(fallback)
             cmp.abort()
             fallback()
-          end,
+          end, { "i" })
+
         }),
         sources = cmp.config.sources({
           { name = "nvim_lsp" },
-          { name = "path" },
+          { name = "luasnip" },
         }, {
+          { name = "path" },
           { name = "buffer" },
         }),
+        sorting = {
+          comparators = {
+            require("clangd_extensions.cmp_scores")
+          }
+        },
         snippet = {
           expand = function(args)
             require("luasnip").lsp_expand(args.body)
           end,
+        },
+        formatting = {
+          format = function(entry, item)
+            local icons = require("util.ui").icons.kinds
+            if icons[item.kind] then
+              item.kind = icons[item.kind] .. item.kind
+            end
+            local widths = {
+              abbr = vim.g.cmp_widths and vim.g.cmp_widths.abbr or 40,
+              menu = vim.g.cmp_widths and vim.g.cmp_widths.menu or 30,
+            }
+
+            for key, width in pairs(widths) do
+              if item[key] and vim.fn.strdisplaywidth(item[key]) > width then
+                item[key] = vim.fn.strcharpart(item[key], 0, width - 1) .. "…"
+              end
+            end
+
+            return item
+          end
         },
         experimental = {
           ghost_text = {
@@ -170,7 +202,7 @@ return {
     },
     config = function()
       vim.o.foldcolumn = "0" -- '0' is not bad
-      vim.o.foldlevel = 99 -- Using ufo provider need a large value, feel free to decrease the value
+      vim.o.foldlevel = 99   -- Using ufo provider need a large value, feel free to decrease the value
       vim.o.foldlevelstart = 99
       vim.o.foldenable = true
 
