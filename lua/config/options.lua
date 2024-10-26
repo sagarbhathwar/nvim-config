@@ -17,7 +17,29 @@ vim.cmd.colorscheme("tokyonight")
 -- vim.opt.foldlevelstart = 99
 
 -- Undo file
-vim.o.undofile = false
+vim.opt.undofile = true
+
+-- Indentattion setting
+vim.opt.autoindent = true
+vim.o.breakindent = true
 
 -- vim.o.hidden = false
 -- vim.o.sessionoptions = "blank,buffers,curdir,folds,help,tabpages,winsize,winpos,terminal,localoptions"
+
+-- Highlight current line
+vim.opt.cursorline = true
+
+-- Min lines below cursor
+vim.opt.scrolloff = 20
+
+-- Clear highlights on search when pressing <Esc> in normal mode
+vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
+
+-- Easier way to exit terminal mode
+vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
+
+-- HACK: Disable arrow keys in normal mode
+vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!"<CR>')
+vim.keymap.set('n', '<right>', '<cmd>echo "Use l to move!"<CR>')
+vim.keymap.set('n', '<up>', '<cmd>echo "Use k to move!"<CR>')
+vim.keymap.set('n', '<down>', '<cmd>echo "Use j to move!"<CR>')

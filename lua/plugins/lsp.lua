@@ -204,25 +204,25 @@ return {
         opts.capabilities
       )
 
+      -- Setup handler for mason-lspconfig
       local function setup(server)
         local server_opts = vim.tbl_deep_extend("force", {
           capabilities = vim.deepcopy(capabilities),
         }, opts.servers[server] or {})
 
 
-        if opts.setup[server] then
-          if opts.setup[server](server, server_opts) then
-            return
-          end
-        elseif opts.setup["*"] then
-          if opts.setup["*"](server, server_opts) then
-            return
-          end
+        -- For default and manual setup
+        -- If the manual setup returns true, no need to call lspconfig setup
+        if opts.setup[server] and opts.setup[server](server, server_opts) then
+          return
+        elseif opts.setup["*"] and opts.setup["*"](server, server_opts) then
+          return
         end
 
         require("lspconfig")[server].setup(server_opts)
       end
 
+      -- Setup mason and mason-lspconfig
       require("mason").setup()
 
       require("mason-lspconfig").setup({

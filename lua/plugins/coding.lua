@@ -15,9 +15,6 @@ return {
       local cmp = require("cmp")
       local luasnip = require("luasnip")
       return {
-        auto_brackets = {
-          "python",
-        }, -- configure any filetype to auto add brackets
         completion = {
           completeopt = "menu,menuone,noinsert",
         },
@@ -202,7 +199,7 @@ return {
     },
     config = function()
       vim.o.foldcolumn = "0" -- '0' is not bad
-      vim.o.foldlevel = 99   -- Using ufo provider need a large value, feel free to decrease the value
+      vim.o.foldlevel = 99   -- Using ufo provider need a large value
       vim.o.foldlevelstart = 99
       vim.o.foldenable = true
 
@@ -218,7 +215,22 @@ return {
     config = function()
       local cmp_autopairs = require("nvim-autopairs.completion.cmp")
       local cmp = require("cmp")
-      cmp.event:on("confirm_done", cmp_autopairs.on_confirm_done())
+      local handlers = require('nvim-autopairs.completion.handlers')
+      cmp.event:on("confirm_done", cmp_autopairs.on_confirm_done({
+        filetypes = {
+          ["python"] = {
+            ["("] = {
+              -- HACK: This avoids inserting auto-pairs when importing
+              kind = {
+                cmp.lsp.CompletionItemKind.Function,
+                cmp.lsp.CompletionItemKind.Method,
+                cmp.lsp.CompletionItemKind.Class
+              },
+              handler = handlers["*"]
+            }
+          },
+        }
+      }))
 
       require("nvim-autopairs").setup({
         enable_check_bracket_line = false,

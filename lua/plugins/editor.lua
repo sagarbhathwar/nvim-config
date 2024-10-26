@@ -8,6 +8,8 @@ return {
       "nvim-tree/nvim-web-devicons",
       "MunifTanjim/nui.nvim",
       "3rd/image.nvim",
+      "airblade/vim-rooter" -- Properly sets cwd when neovim is opened
+
     },
     keys = {
       { "<leader>fe", "<cmd>Neotree toggle<cr>",           desc = "Explorer NeoTree (Root Dir)" },
@@ -278,17 +280,13 @@ return {
   -- Telescope
   {
     "nvim-telescope/telescope.nvim",
+    tag = '0.1.8',
     cmd = "Telescope",
     dependencies = {
-      {
-        "nvim-telescope/telescope-fzf-native.nvim",
-        build = "make",
-        cond = function()
-          return vim.fn.executable("make") == 1
-        end,
-      },
+      { 'nvim-lua/plenary.nvim' },
+      { "nvim-telescope/telescope-fzf-native.nvim", build = "make", },
       { "nvim-telescope/telescope-ui-select.nvim" },
-      { "nvim-tree/nvim-web-devicons",            enabled = vim.g.have_nerd_font },
+      { "nvim-tree/nvim-web-devicons",              enabled = vim.g.have_nerd_font },
     },
     opts = function()
       return {
@@ -305,8 +303,8 @@ return {
         desc = "Switch Buffer",
       },
       { "<leader>/",       "<cmd>Telescope live_grep<cr>",                                desc = "Grep (Root Dir)" },
-      { "<leader>:",       "<cmd>Telescope command_history<cr>",                          desc = "Command History" },
       { "<leader><space>", "<cmd>Telescope find_files<cr>",                               desc = "Find Files (Root Dir)" },
+      { "<leader>:",       "<cmd>Telescope command_history<cr>",                          desc = "Command History" },
       -- find
       { "<leader>fb",      "<cmd>Telescope buffers sort_mru=true sort_lastused=true<cr>", desc = "Buffers" },
       { "<leader>fg",      "<cmd>Telescope git_files<cr>",                                desc = "Find Files (git-files)" },
@@ -322,7 +320,6 @@ return {
       { "<leader>sC",      "<cmd>Telescope commands<cr>",                                 desc = "Commands" },
       { "<leader>sd",      "<cmd>Telescope diagnostics bufnr=0<cr>",                      desc = "Document Diagnostics" },
       { "<leader>sD",      "<cmd>Telescope diagnostics<cr>",                              desc = "Workspace Diagnostics" },
-      { "<leader>sg",      "<cmd>Telescope live_grep<cr>",                                desc = "Grep (Root Dir)" },
       { "<leader>sh",      "<cmd>Telescope help_tags<cr>",                                desc = "Help Pages" },
       { "<leader>sH",      "<cmd>Telescope highlights<cr>",                               desc = "Search Highlight Groups" },
       { "<leader>sj",      "<cmd>Telescope jumplist<cr>",                                 desc = "Jumplist" },
@@ -338,6 +335,9 @@ return {
     config = function()
       require("telescope").setup({
         extensions = {
+          fzf = {
+            fuzzy = false,
+          },
           ["ui-select"] = {
             require("telescope.themes").get_dropdown(),
           },
