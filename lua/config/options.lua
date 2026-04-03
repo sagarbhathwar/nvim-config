@@ -45,4 +45,4 @@ vim.opt.fillchars:append("fold: ")
 vim.opt.foldlevelstart = 99
 
 -- NOTE: Making life a bit harder
-vim.opt.mouse = ""
+-- vim.opt.mouse = ""

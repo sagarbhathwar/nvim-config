@@ -29,8 +29,32 @@ return {
       { "<leader>gs", "<cmd>Telescope git_status<CR>", desc = "Status" },
     },
     config = function()
+      require("telescope").setup({
+        extensions = {
+          ["ui-select"] = {
+            require("telescope.themes").get_dropdown(),
+          },
+        },
+      })
       require("telescope").load_extension("fzf")
       require("telescope").load_extension("ui-select")
+    end,
+  },
+
+  -- better vim.ui with telescope
+  {
+    "stevearc/dressing.nvim",
+    lazy = true,
+    opts = {},
+    init = function()
+      vim.ui.select = function(...)
+        require("lazy").load({ plugins = { "dressing.nvim" } })
+        return vim.ui.select(...)
+      end
+      vim.ui.input = function(...)
+        require("lazy").load({ plugins = { "dressing.nvim" } })
+        return vim.ui.input(...)
+      end
     end,
   },
 }
