@@ -1,11 +1,13 @@
-vim.cmd.colorscheme("tokyonight")
-
--- OSC-52 clipboard
+-- OSC-52 clipboard (required for SSH)
 vim.g.clipboard = "osc52"
+
+-- Disable mouse to build better habits
+vim.opt.mouse = ""
 
 -- Line numbers
 vim.opt.number = true
 vim.opt.relativenumber = true
+vim.opt.signcolumn = "yes"
 
 -- Tab settings
 vim.opt.tabstop = 4
@@ -13,11 +15,25 @@ vim.opt.softtabstop = 4
 vim.opt.shiftwidth = 4
 vim.opt.expandtab = true
 
+-- Splits
+vim.opt.splitright = true
+vim.opt.splitbelow = true
+
+-- Search
+vim.opt.ignorecase = true
+vim.opt.smartcase = true
+
+-- Faster CursorHold (gitsigns, illuminate)
+vim.opt.updatetime = 250
+
 -- Undo file
 vim.opt.undodir = os.getenv("HOME") .. "/.vim/undodir"
 vim.opt.undofile = true
 
--- Indentattion setting
+-- Auto-reload files changed externally (e.g. by Claude Code)
+vim.opt.autoread = true
+
+-- Indentation setting
 vim.opt.autoindent = true
 vim.o.breakindent = true
 
@@ -44,5 +60,23 @@ vim.opt.fillchars:append("fold: ")
 -- Open all folds by default, zm is not available
 vim.opt.foldlevelstart = 99
 
--- NOTE: Making life a bit harder
--- vim.opt.mouse = ""
+-- Diagnostics
+vim.diagnostic.config({
+  virtual_text = {
+    spacing = 4,
+    prefix = "●",
+  },
+  float = {
+    border = "rounded",
+    source = true,
+  },
+  severity_sort = true,
+  signs = {
+    text = {
+      [vim.diagnostic.severity.ERROR] = " ",
+      [vim.diagnostic.severity.WARN] = " ",
+      [vim.diagnostic.severity.INFO] = " ",
+      [vim.diagnostic.severity.HINT] = "󰌵 ",
+    },
+  },
+})

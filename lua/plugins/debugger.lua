@@ -181,7 +181,8 @@ return {
 
       -- Set python test runner to pytest, else it defaults to unittest
       dap_python.test_runner = "pytest"
-      dap_python.setup("/local/mnt2/workspace2/shathwar/.venv/debugpy-env/bin/debugpy-adapter")
+      local debugpy_path = vim.fn.stdpath("data") .. "/mason/packages/debugpy/venv/bin/python"
+      dap_python.setup(debugpy_path)
     end,
   },
 }

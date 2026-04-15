@@ -1,48 +1,84 @@
-return {
+local kind_icons = {
+  Array = " ",
+  Boolean = "󰨙 ",
+  Class = " ",
+  Codeium = "󰘦 ",
+  Color = " ",
+  Control = " ",
+  Collapsed = " ",
+  Constant = "󰏿 ",
+  Constructor = " ",
+  Copilot = " ",
+  Enum = " ",
+  EnumMember = " ",
+  Event = " ",
+  Field = " ",
+  File = " ",
+  Folder = " ",
+  Function = "󰊕 ",
+  Interface = " ",
+  Key = " ",
+  Keyword = " ",
+  Method = "󰊕 ",
+  Module = " ",
+  Namespace = "󰦮 ",
+  Null = " ",
+  Number = "󰎠 ",
+  Object = " ",
+  Operator = " ",
+  Package = " ",
+  Property = " ",
+  Reference = " ",
+  Snippet = " ",
+  String = " ",
+  Struct = "󰆼 ",
+  TabNine = "󰏚 ",
+  Text = " ",
+  TypeParameter = " ",
+  Unit = " ",
+  Value = " ",
+  Variable = "󰀫 ",
+}
 
-  -- Completion
+return {
+  -- Completion engine
   {
     "hrsh7th/nvim-cmp",
-    event = "InsertEnter",
+    event = { "InsertEnter", "CmdlineEnter" },
     dependencies = {
       "hrsh7th/cmp-nvim-lsp",
       "hrsh7th/cmp-buffer",
       "hrsh7th/cmp-path",
+      "hrsh7th/cmp-cmdline",
       { "L3MON4D3/LuaSnip", build = "make install_jsregexp" },
       "saadparwaiz1/cmp_luasnip",
     },
-    opts = function()
-      vim.api.nvim_set_hl(0, "CmpGhostText", { link = "Comment", default = true })
+    config = function()
       local cmp = require("cmp")
       local luasnip = require("luasnip")
       local defaults = require("cmp.config.default")()
-      return {
+
+      vim.api.nvim_set_hl(0, "CmpGhostText", { link = "Comment", default = true })
+
+      cmp.setup({
         completion = {
           completeopt = "menu,menuone,noinsert",
         },
         preselect = cmp.PreselectMode.Item or cmp.PreselectMode.None,
         mapping = cmp.mapping.preset.insert({
-
           ["<C-b>"] = cmp.mapping.scroll_docs(-4),
           ["<C-f>"] = cmp.mapping.scroll_docs(4),
-
-          -- Select the current option
-          -- or expand the luasnip snippet
           ["<C-y>"] = cmp.mapping(function(fallback)
             if cmp.visible() then
               if luasnip.expandable() then
                 luasnip.expand()
               else
-                cmp.confirm({
-                  select = true,
-                })
+                cmp.confirm({ select = true })
               end
             else
               fallback()
             end
           end),
-
-          -- Go to next option
           ["<C-n>"] = cmp.mapping(function(fallback)
             if cmp.visible() then
               cmp.select_next_item()
@@ -52,7 +88,6 @@ return {
               fallback()
             end
           end, { "i", "s" }),
-          -- Go to previous option
           ["<C-p>"] = cmp.mapping(function(fallback)
             if cmp.visible() then
               cmp.select_prev_item()
@@ -62,11 +97,7 @@ return {
               fallback()
             end
           end, { "i", "s" }),
-
-          ["<C-Space>"] = cmp.mapping(function(fallback)
-            cmp.close()
-          end, { "i" }),
-
+          ["<C-Space>"] = cmp.mapping.complete(),
           ["<C-CR>"] = cmp.mapping(function(fallback)
             cmp.abort()
             fallback()
@@ -86,26 +117,46 @@ return {
           end,
         },
         formatting = {
-          format = function(entry, item)
-            local icons = require("config.ui").icons
-            if icons[item.kind] then
-              item.kind = icons[item.kind] .. item.kind
+          format = function(_, item)
+            if kind_icons[item.kind] then
+              item.kind = kind_icons[item.kind] .. item.kind
             end
             local widths = {
               abbr = vim.g.cmp_widths and vim.g.cmp_widths.abbr or 40,
               menu = vim.g.cmp_widths and vim.g.cmp_widths.menu or 30,
             }
-
             for key, width in pairs(widths) do
               if item[key] and vim.fn.strdisplaywidth(item[key]) > width then
                 item[key] = vim.fn.strcharpart(item[key], 0, width - 1) .. "…"
               end
             end
-
             return item
           end,
         },
-      }
+      })
+
+      -- Autopairs integration: auto-insert () on function completion
+      local cmp_autopairs = require("nvim-autopairs.completion.cmp")
+      cmp.event:on("confirm_done", cmp_autopairs.on_confirm_done())
+
+      -- : command line completion
+      cmp.setup.cmdline(":", {
+        mapping = cmp.mapping.preset.cmdline(),
+        formatting = { fields = { "abbr" } },
+        sources = cmp.config.sources({
+          { name = "cmdline" },
+        }, {
+          { name = "path" },
+        }),
+      })
+
+      -- / search completion
+      cmp.setup.cmdline("/", {
+        mapping = cmp.mapping.preset.cmdline(),
+        sources = {
+          { name = "buffer" },
+        },
+      })
     end,
   },
 
@@ -114,57 +165,5 @@ return {
     "windwp/nvim-autopairs",
     event = "InsertEnter",
     opts = {},
-  },
-  -- formatting
-  {
-    "stevearc/conform.nvim",
-    keys = {
-      {
-        "<leader>f",
-        function()
-          require("conform").format({ lsp_fallback = true })
-        end,
-        desc = "Format",
-      },
-    },
-    opts = {
-      formatters_by_ft = {
-        lua = { "stylua" },
-        python = { "ruff_fix", "ruff_format" },
-        markdown = { "inject" },
-      },
-      format_on_save = {
-        lsp_format = "fallback",
-        timeout_ms = 1000,
-      },
-    },
-    init = function()
-      require("conform").setup({
-        format_on_save = function(bufnr)
-          -- Disable with a global or buffer-local variable
-          if vim.g.disable_autoformat or vim.b[bufnr].disable_autoformat then
-            return
-          end
-          return { timeout_ms = 500, lsp_format = "fallback" }
-        end,
-      })
-      vim.api.nvim_create_user_command("FormatDisable", function(args)
-        -- NOTE: FormatDisable! will disable formatting just for this buffer
-        if args.bang then
-          vim.b.disable_autoformat = true
-        else
-          vim.g.disable_autoformat = true
-        end
-      end, {
-        desc = "Disable autoformat-on-save",
-        bang = true,
-      })
-      vim.api.nvim_create_user_command("FormatEnable", function()
-        vim.b.disable_autoformat = false
-        vim.g.disable_autoformat = false
-      end, {
-        desc = "Re-enable autoformat-on-save",
-      })
-    end,
   },
 }
