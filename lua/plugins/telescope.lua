@@ -13,6 +13,8 @@ return {
       { "<leader>/", "<cmd>Telescope live_grep<cr>", desc = "Grep (Root Dir)" },
       { "<leader><space>", "<cmd>Telescope find_files<cr>", desc = "Find Files (Root Dir)" },
       { "<leader>:", "<cmd>Telescope command_history<cr>", desc = "Command History" },
+      { "<leader>gc", "<cmd>Telescope git_commits<CR>", desc = "Git Commits" },
+      { "<leader>gs", "<cmd>Telescope git_status<CR>", desc = "Git Status" },
     },
     config = function()
       require("telescope").setup({

@@ -54,9 +54,10 @@ return {
     },
   },
 
-  -- LazyGit integration
+  -- LazyGit integration (temporarily disabled)
   {
     "kdheepak/lazygit.nvim",
+    enabled = false,
     cmd = {
       "LazyGit",
       "LazyGitConfig",
@@ -64,44 +65,24 @@ return {
       "LazyGitFilter",
       "LazyGitFilterCurrentFile",
     },
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-    },
     keys = {
       { "<leader>gg", "<cmd>LazyGit<cr>", desc = "LazyGit" },
-      { "<leader>gc", "<cmd>Telescope git_commits<CR>", desc = "Git Commits" },
-      { "<leader>gs", "<cmd>Telescope git_status<CR>", desc = "Git Status" },
     },
-    config = function()
-      local has_telescope, telescope = pcall(require, "telescope")
-      if has_telescope then
-        telescope.load_extension("lazygit")
-      end
-    end,
   },
 
-  -- Multi-file diff review
+  -- Neogit: magit-style git interface
   {
-    "sindrets/diffview.nvim",
-    dependencies = { "nvim-tree/nvim-web-devicons" },
-    cmd = { "DiffviewOpen", "DiffviewFileHistory" },
+    "NeogitOrg/neogit",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "esmuellert/codediff.nvim",
+      "m00qek/baleia.nvim",
+      "nvim-telescope/telescope.nvim",
+    },
+    cmd = "Neogit",
     keys = {
-      { "<leader>gd", "<cmd>DiffviewOpen<cr>", desc = "Diff View" },
-      { "<leader>gf", "<cmd>DiffviewFileHistory %<cr>", desc = "File History" },
+      { "<leader>gg", "<cmd>Neogit<cr>", desc = "Neogit" },
     },
-    opts = {
-      enhanced_diff_hl = true,
-    },
-    config = function(_, opts)
-      require("diffview").setup(opts)
-
-      -- Make filler lines (lines that don't exist on one side) subtle
-      -- instead of bright red, use a dim background
-      vim.api.nvim_set_hl(0, "DiffDelete", { bg = "#2d202a", fg = "#3b3052" })
-      -- Tone down diff backgrounds for readability
-      -- vim.api.nvim_set_hl(0, "DiffAdd", { bg = "#1a2e1a" })
-      -- vim.api.nvim_set_hl(0, "DiffChange", { bg = "#1a2a3a" })
-      -- vim.api.nvim_set_hl(0, "DiffText", { bg = "#2a4a5a" })
-    end,
+    opts = {},
   },
 }

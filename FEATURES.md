@@ -90,7 +90,7 @@ Leader key: `Space`
 | `<leader>gg` | n | Open LazyGit |
 | `<leader>gc` | n | Git commits (Telescope) |
 | `<leader>gs` | n | Git status (Telescope) |
-| `<leader>gd` | n | Diff view (all changes) |
+| `<leader>gd` | n | Open CodeDiff |
 | `<leader>gf` | n | File history (current file) |
 
 ### Hunks (Gitsigns)
@@ -213,7 +213,8 @@ Commands: `:FormatDisable` / `:FormatEnable` to toggle auto-format on save.
 | mason-lspconfig | Mason + LSP integration |
 | gitsigns.nvim | Git signs + hunk operations |
 | lazygit.nvim | LazyGit integration |
-| diffview.nvim | Multi-file diff review |
+| diffview.nvim | ~~Multi-file diff review~~ (replaced by codediff.nvim) |
+| codediff.nvim | VSCode-style diff review with character-level highlighting |
 | nvim-dap | Debug adapter protocol |
 | nvim-dap-python | Python debugging |
 | nvim-dap-view | DAP UI panel |

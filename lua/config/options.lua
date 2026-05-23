@@ -80,3 +80,6 @@ vim.diagnostic.config({
     },
   },
 })
+
+-- Git diff context window
+vim.opt.diffopt:append("context:10")
